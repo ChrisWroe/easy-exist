@@ -89,6 +89,14 @@ module EasyExist
 			res.success? ? res : handle_error(res)
 		end
 
+		# Returns the results of running the query stored at the given uri
+		#
+		# @param query_uri [String] the URI of the query to run
+		# @return [String] the query results
+		def execute_stored_query(query_uri)
+			self.get(query_uri)
+		end
+
 		private
 			# Raises an error based on a HTTParty::Response.
 			# HTTParty:Response objects contain a reference to the Net::HTTResponse object.

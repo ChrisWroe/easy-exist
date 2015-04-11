@@ -201,6 +201,16 @@ describe "Easy Exist" do
 		end
 	end
 
+	describe "#execute_stored_query" do
+		let(:query) { "let $var := 1\nreturn <var>{$var}</var>" }
+		let(:query_uri) { "/my-collection/stored-queries/test.xql" }
+		after(:each) { try_delete(query_uri) }
+		it "returns the result of running the stored query" do
+			db.store_query(query_uri, query)
+			expect(db.execute_stored_query(query_uri)).to eq "<var>1</var>"
+		end
+	end
+
 end
 
 def try_delete(uri)
