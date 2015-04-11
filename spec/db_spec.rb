@@ -187,6 +187,18 @@ describe "Easy Exist" do
 					end
 			end
 		end
+		context("when username and password is incorrect") do
+			it "raises a 401 HTTPServerException" do
+				expect{ db_invalid_credentials.store_query(query_uri, query) }.
+					to raise_exception(Net::HTTPServerException, /401/)
+			end
+			it "does not store the query" do
+				expect{ db_invalid_credentials.store_query(query_uri, query) }.
+					to raise_exception do |e|
+						expect(db.exists?(query_uri)).to be false
+					end
+			end
+		end
 	end
 
 end
