@@ -19,9 +19,9 @@ module EasyExist
 			end
 		end
 
-		# Retrieves the document at the specified document_uri from the store.
+		# Retrieves the document at the specified URI from the store.
 		#
-		# @param document_uri [String] the uri of the document to retrieve.
+		# @param document_uri [String] the URI of the document to retrieve.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [String] the contents of the document at 'document_uri'
 		def get(document_uri)
@@ -30,9 +30,9 @@ module EasyExist
 			res.success? ? res.body	: handle_error(res)
 		end
 
-		# Puts the given document content at the specified document_uri
+		# Puts the given document content at the specified URI
 		#
-		# @param document_uri [String] the uri of the document to store.
+		# @param document_uri [String] the URI at wich to store the document.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [HTTParty::Response] the response object
 		def put(document_uri, document)
@@ -41,9 +41,9 @@ module EasyExist
 			res.success? ? res : handle_error(res)
 		end
 
-		# Deletes the document at the specified document_uri from the store
+		# Deletes the document at the specified URI from the store
 		#
-		# @param document_uri [String] the uri of the document to delete.
+		# @param document_uri [String] the URI of the document to delete.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [HTTParty::Response] the response object
 		def delete(document_uri)
@@ -52,7 +52,7 @@ module EasyExist
 			res.success? ? res : handle_error(res)
 		end
 
-		# Determines if the document at the specified document_uri exists in the store
+		# Determines if the document at the specified URI exists in the store
 		#
 		# @param document_uri [String] the uri of the document to check.
 		# relative to the collection specified on initialization otherwise '/db'.
@@ -89,7 +89,7 @@ module EasyExist
 			res.success? ? res : handle_error(res)
 		end
 
-		# Returns the results of running the query stored at the given uri
+		# Returns the results of running the query stored at the specified URI
 		#
 		# @param query_uri [String] the URI of the query to run
 		# @return [String] the query results
@@ -108,9 +108,9 @@ module EasyExist
 				res.response.value
 			end
 
-			# Raises an error if the given uri does not start with a '/'
+			# Raises an error if the specified URI does not start with a '/'
 			#
-			# @param uri [String] the uri to validate
+			# @param uri [String] the URI to validate
 			def validate_uri(uri)
 				raise ArgumentError, 'URI must contain preceding "/"' if uri[0] != '/';
 			end
@@ -122,7 +122,7 @@ module EasyExist
 				validate_uri(opts[:collection]) unless opts[:collection].nil? || opts[:collection].empty?
 			end
 
-			# Stores the given document at the given uri with the specified content type
+			# Stores a document at the specified URI and with the specified content type
 			#
 			# @param uri [String] the URI under which to store the document
 			# @param document [String] the document body
