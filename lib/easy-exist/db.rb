@@ -59,7 +59,7 @@ module EasyExist
 		#
 		# @param document_uri [String] the uri of the document to check.
 		# relative to the collection specified on initialization otherwise '/db'.
-		# @return [TrueClass | FalseClass] 
+		# @return [TrueClass | FalseClass]
 		def exists?(document_uri)
 			validate_uri(document_uri)
 			HTTParty.get(document_uri, @default_opts).success?
@@ -79,6 +79,19 @@ module EasyExist
 				headers: { 'Content-Type' => 'application/xml', 'Content-Length' => body.length.to_s }
 			}))
 			res.success? ? res.body : handle_error(res)
+		end
+
+		# Stores the given query at the specified URI
+		#
+		# @param query_uri [String] the URI of the query to run
+		# @param query [String] the query body
+		# @return [HTTParty::Response] the response object
+		def store_query(query_uri, query)
+			res = HTTParty.put(query_uri, @default_opts.merge({
+				body: query,
+				headers: { "Content-Type" => "application/xquery"},
+			}))
+			res.success? ? res : handle_error(res)
 		end
 
 		private
