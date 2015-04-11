@@ -209,6 +209,25 @@ describe "Easy Exist" do
 			db.store_query(query_uri, query)
 			expect(db.execute_stored_query(query_uri)).to eq "<var>1</var>"
 		end
+		context "when document does not exist at given uri" do
+			it "raises a 404 HTTPServerException" do
+				expect{ db.execute_stored_query("/test-collection/non-existant.xql") }.
+					to raise_exception(Net::HTTPServerException, /404/)
+			end
+		end
+		context("when username and password is incorrect") do
+			it "raises a 401 HTTPServerException" do
+				db.store_query(query_uri, query)
+				expect{ db_invalid_credentials.execute_stored_query(query_uri) }.
+					to raise_exception(Net::HTTPServerException, /401/)
+			end
+		end
+		context "when given uri does not contain a preceding '/'" do
+			it "raises an ArgumentError" do
+				expect{ db.execute_stored_query("uri/without/preceding/slash.xql") }.
+					to raise_error(ArgumentError)
+			end
+		end
 	end
 
 end
