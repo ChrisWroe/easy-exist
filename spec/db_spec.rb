@@ -166,10 +166,16 @@ describe "Easy Exist" do
 	end
 
 	describe "#store_query" do
+		let(:query) { "let $var := 1\nreturn <var>{$var}</var>" }
 		it "should store the given query" do
-			query = "let $var := 1\nreturn <var>{$var}</var>"
 			db.store_query("/my-collection/stored-queries/test.xql", query)
 			expect(db.exists?("/my-collection/stored-queries/test.xql")).to be true
+		end
+		context "when given uri does not contain a preceding '/'" do
+			it "raises an ArgumentError" do
+				expect{ db.store_query("uri/without/preceding/slash.xql", query) }.
+					to raise_error(ArgumentError)
+			end
 		end
 	end
 

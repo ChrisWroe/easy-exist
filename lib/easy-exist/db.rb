@@ -87,6 +87,7 @@ module EasyExist
 		# @param query [String] the query body
 		# @return [HTTParty::Response] the response object
 		def store_query(query_uri, query)
+			validate_uri(query_uri)
 			res = HTTParty.put(query_uri, @default_opts.merge({
 				body: query,
 				headers: { "Content-Type" => "application/xquery"},
