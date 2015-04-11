@@ -165,6 +165,14 @@ describe "Easy Exist" do
 		end
 	end
 
+	describe "#store_query" do
+		it "should store the given query" do
+			query = "let $var := 1\nreturn <var>{$var}</var>"
+			db.store_query("/my-collection/stored-queries/test.xql", query)
+			expect(db.exists?("/my-collection/stored-queries/test.xql")).to be true
+		end
+	end
+
 end
 
 def parse_xml(xml)
