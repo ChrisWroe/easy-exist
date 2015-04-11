@@ -154,6 +154,19 @@ db.query(query)</pre></div>
 
 <div class="highlight highlight-ruby"><pre>db.query(query, { <span class="pl-c1">start:</span> <span class="pl-c1">2</span>, <span class="pl-c1">max:</span> <span class="pl-c1">10</span> })</pre></div>
 
+<h4>
+<a id="stored-xquery" class="anchor" href="#stored-xquery" aria-hidden="true"><span class="octicon octicon-link"></span></a>Stored XQuery</h4>
+
+<div class="highlight highlight-ruby"><pre>query <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">&lt;&lt;-END</span>;</span>
+<span class="pl-s">        let $var := 1</span>
+<span class="pl-s">        return &lt;var&gt;{$var}&lt;/var&gt;</span>
+<span class="pl-s"><span class="pl-pds">    END</span></span>
+
+db.store_query(<span class="pl-s"><span class="pl-pds">"</span>/stored-queries/var.xq<span class="pl-pds">"</span></span>, query)
+
+db.execute_stored_query(<span class="pl-s"><span class="pl-pds">"</span>/stored-queries/var.xq<span class="pl-pds">"</span></span>)
+<span class="pl-c"># &lt;var&gt;1&lt;/var&gt;</span></pre></div>
+
 <h3>
 <a id="handling-exceptions" class="anchor" href="#handling-exceptions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Handling Exceptions</h3>
 
