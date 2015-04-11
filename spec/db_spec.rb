@@ -8,12 +8,7 @@ describe "Easy Exist" do
 	let(:db_invalid_credentials) 	{ EasyExist::DB.new("http://localhost:8088", { username: "test-user", password: "wrongpassword" }) }
 	let(:doc)						{ { uri: "/test-collection/test.xml", body: "<message language='en'><body>Hello World</body><sender>Alice</sender><recipient>Bob</recipient></message>" } }
 
-	after(:each) do
-		begin
-			db.delete(doc[:uri])
-		rescue Net::HTTPServerException => e
-		end
-	end
+	after(:each) { try_delete(doc[:uri]) }
 
 	describe "#new" do
 		context "when given collection name does not contain a preceding '/'" do
@@ -168,13 +163,7 @@ describe "Easy Exist" do
 	describe "#store_query" do
 		let(:query) { "let $var := 1\nreturn <var>{$var}</var>" }
 		let(:query_uri) { "/my-collection/stored-queries/test.xql" }
-
-		after(:each) do
-			begin
-			db.delete(query_uri)
-			rescue Net::HTTPServerException => e
-			end
-		end
+		after(:each) { try_delete(query_uri) }
 
 		it "should store the given query" do
 			db.store_query(query_uri, query)
@@ -200,6 +189,13 @@ describe "Easy Exist" do
 		end
 	end
 
+end
+
+def try_delete(uri)
+	begin
+		db.delete(uri)
+	rescue Net::HTTPServerException => e
+	end
 end
 
 def parse_xml(xml)
