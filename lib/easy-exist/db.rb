@@ -37,10 +37,7 @@ module EasyExist
 		# @return [HTTParty::Response] the response object
 		def put(document_uri, document)
 			validate_uri(document_uri)
-			res = HTTParty.put(document_uri, @default_opts.merge({
-				body: document,
-				headers: { "Content-Type" => "application/xml"},
-			}))
+			res = put_document(document_uri, document, "application/xml")
 			res.success? ? res : handle_error(res)
 		end
 
@@ -88,10 +85,7 @@ module EasyExist
 		# @return [HTTParty::Response] the response object
 		def store_query(query_uri, query)
 			validate_uri(query_uri)
-			res = HTTParty.put(query_uri, @default_opts.merge({
-				body: query,
-				headers: { "Content-Type" => "application/xquery"},
-			}))
+			res = put_document(query_uri, query, "application/xquery")
 			res.success? ? res : handle_error(res)
 		end
 
@@ -118,6 +112,19 @@ module EasyExist
 			# @param opts [Hash] options to validate.
 			def validate_opts(opts)
 				validate_uri(opts[:collection]) unless opts[:collection].nil? || opts[:collection].empty?
+			end
+
+			# Stores the given document at the given uri with the specified content type
+			#
+			# @param uri [String] the URI under which to store the document
+			# @param document [String] the document body
+			# @param content_type [String] the MIME Type of the document
+			# @return [HTTParty::Response] the response object
+			def put_document(uri, document, content_type)
+				HTTParty.put(uri, @default_opts.merge({
+					body: document,
+					headers: { "Content-Type" => content_type},
+				}))
 			end
 	end
 end
