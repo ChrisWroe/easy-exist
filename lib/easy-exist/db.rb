@@ -19,9 +19,9 @@ module EasyExist
 			end
 		end
 
-		# Retrieves the document at the specified document_uri from the store.
+		# Retrieves the document at the specified URI from the store.
 		#
-		# @param document_uri [String] the uri of the document to retrieve.
+		# @param document_uri [String] the URI of the document to retrieve.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [String] the contents of the document at 'document_uri'
 		def get(document_uri)
@@ -30,23 +30,20 @@ module EasyExist
 			res.success? ? res.body	: handle_error(res)
 		end
 
-		# Puts the given document content at the specified document_uri
+		# Puts the given document content at the specified URI
 		#
-		# @param document_uri [String] the uri of the document to store.
+		# @param document_uri [String] the URI at wich to store the document.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [HTTParty::Response] the response object
 		def put(document_uri, document)
 			validate_uri(document_uri)
-			res = HTTParty.put(document_uri, @default_opts.merge({
-				body: document,
-				headers: { "Content-Type" => "application/xml"},
-			}))
+			res = put_document(document_uri, document, "application/xml")
 			res.success? ? res : handle_error(res)
 		end
 
-		# Deletes the document at the specified document_uri from the store
+		# Deletes the document at the specified URI from the store
 		#
-		# @param document_uri [String] the uri of the document to delete.
+		# @param document_uri [String] the URI of the document to delete.
 		# relative to the collection specified on initialization otherwise '/db'.
 		# @return [HTTParty::Response] the response object
 		def delete(document_uri)
@@ -55,11 +52,11 @@ module EasyExist
 			res.success? ? res : handle_error(res)
 		end
 
-		# Determines if the document at the specified document_uri exists in the store
+		# Determines if the document at the specified URI exists in the store
 		#
 		# @param document_uri [String] the uri of the document to check.
 		# relative to the collection specified on initialization otherwise '/db'.
-		# @return [TrueClass | FalseClass] 
+		# @return [TrueClass | FalseClass]
 		def exists?(document_uri)
 			validate_uri(document_uri)
 			HTTParty.get(document_uri, @default_opts).success?
@@ -81,6 +78,25 @@ module EasyExist
 			res.success? ? res.body : handle_error(res)
 		end
 
+		# Stores the given query at the specified URI
+		#
+		# @param query_uri [String] the URI of the query to run
+		# @param query [String] the query body
+		# @return [HTTParty::Response] the response object
+		def store_query(query_uri, query)
+			validate_uri(query_uri)
+			res = put_document(query_uri, query, "application/xquery")
+			res.success? ? res : handle_error(res)
+		end
+
+		# Returns the results of running the query stored at the specified URI
+		#
+		# @param query_uri [String] the URI of the query to run
+		# @return [String] the query results
+		def execute_stored_query(query_uri)
+			self.get(query_uri)
+		end
+
 		private
 			# Raises an error based on a HTTParty::Response.
 			# HTTParty:Response objects contain a reference to the Net::HTTResponse object.
@@ -92,9 +108,9 @@ module EasyExist
 				res.response.value
 			end
 
-			# Raises an error if the given uri does not start with a '/'
+			# Raises an error if the specified URI does not start with a '/'
 			#
-			# @param uri [String] the uri to validate
+			# @param uri [String] the URI to validate
 			def validate_uri(uri)
 				raise ArgumentError, 'URI must contain preceding "/"' if uri[0] != '/';
 			end
@@ -104,6 +120,19 @@ module EasyExist
 			# @param opts [Hash] options to validate.
 			def validate_opts(opts)
 				validate_uri(opts[:collection]) unless opts[:collection].nil? || opts[:collection].empty?
+			end
+
+			# Stores a document at the specified URI and with the specified content type
+			#
+			# @param uri [String] the URI under which to store the document
+			# @param document [String] the document body
+			# @param content_type [String] the MIME Type of the document
+			# @return [HTTParty::Response] the response object
+			def put_document(uri, document, content_type)
+				HTTParty.put(uri, @default_opts.merge({
+					body: document,
+					headers: { "Content-Type" => content_type},
+				}))
 			end
 	end
 end

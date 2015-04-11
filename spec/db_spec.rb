@@ -8,12 +8,7 @@ describe "Easy Exist" do
 	let(:db_invalid_credentials) 	{ EasyExist::DB.new("http://localhost:8088", { username: "test-user", password: "wrongpassword" }) }
 	let(:doc)						{ { uri: "/test-collection/test.xml", body: "<message language='en'><body>Hello World</body><sender>Alice</sender><recipient>Bob</recipient></message>" } }
 
-	after(:each) do
-		begin
-			db.delete(doc[:uri])
-		rescue Net::HTTPServerException => e
-		end
-	end
+	after(:each) { try_delete(doc[:uri]) }
 
 	describe "#new" do
 		context "when given collection name does not contain a preceding '/'" do
@@ -165,6 +160,83 @@ describe "Easy Exist" do
 		end
 	end
 
+	describe "#store_query" do
+		let(:query) { "let $var := 1\nreturn <var>{$var}</var>" }
+		let(:query_uri) { "/my-collection/stored-queries/test.xql" }
+		after(:each) { try_delete(query_uri) }
+
+		it "should store the given query" do
+			db.store_query(query_uri, query)
+			expect(db.exists?(query_uri)).to be true
+		end
+		context "when given uri does not contain a preceding '/'" do
+			it "raises an ArgumentError" do
+				expect{ db.store_query("uri/without/preceding/slash.xql", query) }.
+					to raise_error(ArgumentError)
+			end
+		end
+		context("when username and password is not present") do
+			it "raises a 401 HTTPServerException" do
+				expect{ db_no_credentials.store_query(query_uri, query) }.
+					to raise_exception(Net::HTTPServerException, /401/)
+			end
+			it "does not store the query" do
+				expect{ db_no_credentials.store_query(query_uri, query) }.
+					to raise_exception do |e|
+						expect(db.exists?(query_uri)).to be false
+					end
+			end
+		end
+		context("when username and password is incorrect") do
+			it "raises a 401 HTTPServerException" do
+				expect{ db_invalid_credentials.store_query(query_uri, query) }.
+					to raise_exception(Net::HTTPServerException, /401/)
+			end
+			it "does not store the query" do
+				expect{ db_invalid_credentials.store_query(query_uri, query) }.
+					to raise_exception do |e|
+						expect(db.exists?(query_uri)).to be false
+					end
+			end
+		end
+	end
+
+	describe "#execute_stored_query" do
+		let(:query) { "let $var := 1\nreturn <var>{$var}</var>" }
+		let(:query_uri) { "/my-collection/stored-queries/test.xql" }
+		after(:each) { try_delete(query_uri) }
+		it "returns the result of running the stored query" do
+			db.store_query(query_uri, query)
+			expect(db.execute_stored_query(query_uri)).to eq "<var>1</var>"
+		end
+		context "when document does not exist at given uri" do
+			it "raises a 404 HTTPServerException" do
+				expect{ db.execute_stored_query("/test-collection/non-existant.xql") }.
+					to raise_exception(Net::HTTPServerException, /404/)
+			end
+		end
+		context("when username and password is incorrect") do
+			it "raises a 401 HTTPServerException" do
+				db.store_query(query_uri, query)
+				expect{ db_invalid_credentials.execute_stored_query(query_uri) }.
+					to raise_exception(Net::HTTPServerException, /401/)
+			end
+		end
+		context "when given uri does not contain a preceding '/'" do
+			it "raises an ArgumentError" do
+				expect{ db.execute_stored_query("uri/without/preceding/slash.xql") }.
+					to raise_error(ArgumentError)
+			end
+		end
+	end
+
+end
+
+def try_delete(uri)
+	begin
+		db.delete(uri)
+	rescue Net::HTTPServerException => e
+	end
 end
 
 def parse_xml(xml)
