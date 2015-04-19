@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'easy-exist'
-  s.version     = '0.4.0'
+  s.version     = '0.5.0'
   s.date        = Date.today.to_s
   s.summary     = "eXist-db made easy!"
   s.description = "An easy to use gem to interact with eXist-db via its REST API."
