@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "An easy to use gem to interact with eXist-db via its REST API."
   s.authors     = ["Tom Cass"]
   s.email       = 'easy.exist.gem@gmail.com'
-  s.files       = ["lib/easy-exist.rb", "lib/easy-exist/db.rb", "lib/easy-exist/query_request.rb"]
+  s.files       = Dir['lib/**/*', 'README*', 'LICENSE*']
   s.homepage    = 'http://casst01.github.io/easy-exist'
   s.license     = 'MIT'
 
