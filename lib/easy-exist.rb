@@ -9,4 +9,5 @@ module EasyExist
 
 	# Defines the eXist-db xml namespace
 	EXIST_NAMESPACE = "http://exist.sourceforge.net/NS/exist"
+	EXIST_SX_NAMESPACE = "http://exist-db.org/xquery/types/serialized"
 end

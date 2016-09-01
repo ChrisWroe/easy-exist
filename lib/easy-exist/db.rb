@@ -68,6 +68,8 @@ module EasyExist
 		# @param opts [Hash] options for the query request.
 		# @option opts :start [Integer] Index of first item to be returned.
 		# @option opts :max [Integer] The maximum number of items to be returned.
+		# @option opts :wrap [Boolean] Wrap results in exist:result element.
+		# @option opts :variables [Hash] external variables to pass into the XQuery. Keys are variable names, values can be single strings or numbers, or an array of strings and numbers. Exist-db also supports passing arbitary XML as a variable but that isnt supported yet.
 		# @return [String] the query results
 		def query(query, opts = {})
 			body = EasyExist::QueryRequest.new(query, opts).body

@@ -1,5 +1,11 @@
 [![Gem Version](https://badge.fury.io/rb/easy-exist.svg)](http://badge.fury.io/rb/easy-exist)
 
+# Fork
+
+ Adds support for passing external variables into queries, modeled on code from https://github.com/wolfgangmm/existdb-node/blob/master/lib/query.js
+
+ TODO - no tests written yet
+
 # Easy-Exist
 
 An easy to use gem to interact with eXist-db via its REST API.
@@ -25,6 +31,16 @@ doc = db.get("/my-collection/my-document")
 # query for all message bodies
 bodies = db.query("collection('my-collection')/message/body");
 
+# query with variables
+query	= <<-END
+    declare variable $name as xs:string external;
+		for $person in collection('my-collection')/person
+		where $person/name = $name
+		return $person
+		END
+
+people = db.query(query,:variables=>{'name'=>'Chris'})
+
 # delete the document
 db.delete("/my-collection/my-document")
 ```
@@ -48,11 +64,11 @@ RSpec is used for tests.
 The tests run against a local exist-db instance under a "test-user" account. If you want to run the tests yourself, ensure that this test-user account has been created. You can update the connection properties in `spec/db_spec.rb`
 
 ```
-let(:db) { 
-    EasyExist::DB.new("http://localhost:8088", { 
-        username: "test-user", 
-        password: "password" 
-    }) 
+let(:db) {
+    EasyExist::DB.new("http://localhost:8088", {
+        username: "test-user",
+        password: "password"
+    })
 }
 ```
 
