@@ -30,7 +30,6 @@ module EasyExist
 					end
 				}
 			end
-			puts @body.to_xml
 		end
 
 		# Returns the request body as xml
