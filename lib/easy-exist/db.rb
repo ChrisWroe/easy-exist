@@ -73,6 +73,7 @@ module EasyExist
 		# @return [String] the query results
 		def query(query, opts = {})
 			body = EasyExist::QueryRequest.new(query, opts).body
+			#puts "about to send #{body}"
 			res = HTTParty.post("", @default_opts.merge({
 				body: body,
 				headers: { 'Content-Type' => 'application/xml', 'Content-Length' => body.length.to_s }
